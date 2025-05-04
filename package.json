@@ -8,7 +8,7 @@
     "start": "node netlify/functions/scrape-himalayas.js"
   },
   "dependencies": {
-    "puppeteer-core": "^21.3.8",                   // Use compatible versions
+    "puppeteer-core": "^21.3.8",                  
     "chrome-aws-lambda": "^10.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.1"
