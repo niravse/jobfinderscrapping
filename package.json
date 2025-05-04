@@ -1,18 +1,16 @@
 {
   "name": "himalayas-scraper",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Serverless Puppeteer scraper for Himalayas.app",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo 'no build needed'",
+    "start": "node netlify/functions/scrape-himalayas.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
+    "puppeteer-core": "^21.3.8",                   // Use compatible versions
     "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^24.8.0",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
   }
 }
