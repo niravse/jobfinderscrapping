@@ -1,14 +1,14 @@
 {
   "name": "himalayas-scraper",
   "version": "1.0.0",
-  "description": "\"# jobfinderscrapping\"",
+  "description": "jobfinderscrapping",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/niravse/jobfinderscrapping.git"
+    "url": "https://github.com/niravse/jobfinderscrapping.git"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/niravse/jobfinderscrapping#readme",
   "dependencies": {
-    "chrome-aws-lambda": "^1.20.1",
-    "puppeteer-core": "^24.8.0",
+    "chrome-aws-lambda": "1.20.1",
+    "puppeteer-core": "1.20.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
