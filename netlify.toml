@@ -1,2 +1,2 @@
-[functions]
-node_bundler = "esbuild"
+[build]
+  functions = "netlify/functions"
