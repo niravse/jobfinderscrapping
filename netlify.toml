@@ -1,7 +1,5 @@
 [build]
   functions = "netlify/functions"
-  command = "npm install && npm run build"  # Optional if you need a build step
-  publish = "build"                         # Optional if you're deploying a front-end
 
 [functions]
-  node_bundler = "node-cjs"  # Fixes issues with modules like 'for-own' and 'kind-of'
+  node_bundler = "node-cjs"
