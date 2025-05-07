@@ -1,9 +1,6 @@
-import puppeteer from 'puppeteer-core';
 import chromium from 'chrome-aws-lambda';
-import fs from 'fs/promises';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import puppeteerExtra from 'puppeteer-extra';
-import kindOf from 'kind-of'; // ✅ ES Module import
 
 
 puppeteerExtra.use(StealthPlugin());
