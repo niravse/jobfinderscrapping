@@ -123,7 +123,6 @@ async function scrapeHimalayas() {
 
   return enrichedJobs;
 }
-
 export const handler = async () => {
   try {
     const data = await scrapeHimalayas();
