@@ -48,12 +48,11 @@ async function scrapeHimalayas() {
   });
 
   const $ = cheerio.load(html);
-  const jobCards = $('a[href*="/jobs/"]').slice(0, 20);
+  const jobCards = $('a[href*="/jobs/"]').slice(0, 20); // Limit to first 20 jobs
 
   const jobs = [];
 
-  for (let i = 0; i < jobCards.length; i++) {
-    const card = jobCards[i];
+  const jobPromises = jobCards.map(async (i, card) => {
     const title = $(card).find('div.flex > div > h3').text().trim() || 'Title not found';
     const company = $(card).find('div.flex > div > p').text().trim() || 'Company not found';
     const link = baseURL + $(card).attr('href');
@@ -84,7 +83,9 @@ async function scrapeHimalayas() {
         jobDate: 'Error'
       });
     }
-  }
+  }).get(); // Run all promises in parallel
+
+  await Promise.all(jobPromises); // Wait for all job pages to be scraped
 
   return jobs;
 }
