@@ -1,8 +1,5 @@
-import chromium from 'chrome-aws-lambda';
-import puppeteerExtra from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
-puppeteerExtra.use(StealthPlugin());
+import axios from 'axios';
+import cheerio from 'cheerio';
 
 function inferJobTitle(description) {
   const categories = [
@@ -19,7 +16,6 @@ function inferJobTitle(description) {
     { title: 'Legal', keywords: ['legal', 'lawyer', 'compliance', 'contract'] },
     { title: 'Operations', keywords: ['operations', 'logistics', 'process', 'supply chain'] },
   ];
-
   const lowerDesc = description.toLowerCase();
   for (const category of categories) {
     if (category.keywords.some(keyword => lowerDesc.includes(keyword))) {
@@ -43,87 +39,54 @@ function inferLocation(description) {
   return match ? match[0] : 'Location not found';
 }
 
-async function loadJobDetails(browser, job) {
-  try {
-    const page = await browser.newPage();
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      const blocked = ['image', 'stylesheet', 'font', 'media'];
-      if (blocked.includes(req.resourceType())) req.abort();
-      else req.continue();
-    });
-
-    await page.setUserAgent('Mozilla/5.0');
-    await page.goto(job.jobLink, { waitUntil: 'domcontentloaded', timeout: 15000 });
-    await page.waitForSelector('article', { timeout: 10000 });
-
-    const { description, date } = await page.evaluate(() => {
-      const desc = document.querySelector('article')?.innerText.trim() || 'No description found';
-      const jobDate = document.querySelector('time')?.getAttribute('datetime') || 'Date not found';
-      return { description: desc, date: jobDate };
-    });
-
-    await page.close();
-
-    return {
-      ...job,
-      jobDescription: description,
-      jobType: inferJobType(description),
-      jobTitle: job.jobTitle === 'Title not found' ? inferJobTitle(description) : job.jobTitle,
-      jobLocation: inferLocation(description),
-      jobDate: date,
-    };
-  } catch (err) {
-    return {
-      ...job,
-      jobDescription: 'Failed to load',
-      jobType: 'Error',
-      jobTitle: 'Unknown',
-      jobLocation: 'Unknown',
-      jobDate: 'Error',
-    };
-  }
-}
-
 async function scrapeHimalayas() {
-  const executablePath = await chromium.executablePath;
+  const baseURL = 'https://himalayas.app';
+  const listURL = `${baseURL}/jobs`;
 
-  const browser = await puppeteerExtra.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath,
-    headless: chromium.headless,
-    ignoreHTTPSErrors: true,
+  const { data: html } = await axios.get(listURL, {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
   });
 
-  const page = await browser.newPage();
-  await page.setUserAgent('Mozilla/5.0');
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const blocked = ['image', 'stylesheet', 'font', 'media'];
-    if (blocked.includes(req.resourceType())) req.abort();
-    else req.continue();
-  });
+  const $ = cheerio.load(html);
+  const jobCards = $('a[href*="/jobs/"]').slice(0, 20);
 
-  await page.goto('https://himalayas.app/jobs', { waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('a[href*="/jobs/"]');
+  const jobs = [];
 
-  const jobs = await page.evaluate(() => {
-    const jobCards = Array.from(document.querySelectorAll('a[href*="/jobs/"]')).slice(0, 20);
-    return jobCards.map(card => {
-      const title = card.querySelector('div.flex > div > h3')?.innerText.trim() || 'Title not found';
-      const company = card.querySelector('div.flex > div > p')?.innerText.trim() || 'Company not found';
-      const link = card.href;
-      return { jobTitle: title, jobCompany: company, jobLink: link };
-    });
-  });
+  for (let i = 0; i < jobCards.length; i++) {
+    const card = jobCards[i];
+    const title = $(card).find('div.flex > div > h3').text().trim() || 'Title not found';
+    const company = $(card).find('div.flex > div > p').text().trim() || 'Company not found';
+    const link = baseURL + $(card).attr('href');
 
-  await page.close();
+    try {
+      const jobPage = await axios.get(link, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const $$ = cheerio.load(jobPage.data);
+      const description = $$('article').text().trim() || 'No description found';
+      const date = $$('time').attr('datetime') || 'Date not found';
 
-  const enrichedJobs = await Promise.all(jobs.map(job => loadJobDetails(browser, job)));
-  await browser.close();
+      jobs.push({
+        jobTitle: title === 'Title not found' ? inferJobTitle(description) : title,
+        jobCompany: company,
+        jobLink: link,
+        jobDescription: description,
+        jobType: inferJobType(description),
+        jobLocation: inferLocation(description),
+        jobDate: date
+      });
+    } catch (err) {
+      jobs.push({
+        jobTitle: title,
+        jobCompany: company,
+        jobLink: link,
+        jobDescription: 'Failed to load',
+        jobType: 'Error',
+        jobLocation: 'Unknown',
+        jobDate: 'Error'
+      });
+    }
+  }
 
-  return enrichedJobs;
+  return jobs;
 }
 
 export const handler = async () => {
