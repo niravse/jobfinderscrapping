@@ -1,5 +1,5 @@
-import axios from 'axios';
-import cheerio from 'cheerio';
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 function inferJobTitle(description) {
   const categories = [
@@ -89,7 +89,7 @@ async function scrapeHimalayas() {
   return jobs;
 }
 
-export const handler = async () => {
+exports.handler = async () => {
   try {
     const data = await scrapeHimalayas();
     return {
