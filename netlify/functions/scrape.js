@@ -104,7 +104,7 @@ exports.handler = async () => {
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*', // ✅ Still allow even on error
+        'Access-Control-Allow-Origin': '*', 
         'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({ error: error.message }),
