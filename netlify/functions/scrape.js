@@ -1,7 +1,6 @@
 import chromium from 'chrome-aws-lambda';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import puppeteerExtra from 'puppeteer-extra';
-
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 puppeteerExtra.use(StealthPlugin());
 
@@ -87,10 +86,14 @@ async function loadJobDetails(browser, job) {
 }
 
 async function scrapeHimalayas() {
+  const executablePath = await chromium.executablePath;
+
   const browser = await puppeteerExtra.launch({
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
     args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
   });
 
   const page = await browser.newPage();
@@ -122,6 +125,7 @@ async function scrapeHimalayas() {
 
   return enrichedJobs;
 }
+
 export const handler = async () => {
   try {
     const data = await scrapeHimalayas();
