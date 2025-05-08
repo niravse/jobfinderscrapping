@@ -25,7 +25,7 @@
     "kind-of": "^6.0.3",
     "puppeteer-core": "^1.20.0",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "2.10.0"
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "devDependencies": {
     "esbuild": "^0.25.4"
