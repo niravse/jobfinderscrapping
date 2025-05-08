@@ -1,3 +1,5 @@
 [functions]
   directory = "netlify/functions"
+
+[functions."*"]
   node_bundler = "node-cjs"
