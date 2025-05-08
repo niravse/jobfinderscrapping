@@ -2,4 +2,8 @@
   functions = "netlify/functions"
 
 [functions]
+<<<<<<< HEAD
   node_bundler = "esbuild"
+=======
+  node_bundler = "esbuild"
+>>>>>>> 533fd8f4656e0e15905961280b419b33cf594e15
