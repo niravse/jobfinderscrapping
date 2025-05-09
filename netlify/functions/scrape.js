@@ -40,8 +40,8 @@ function inferLocation(description) {
 }
 
 async function scrapeHimalayas() {
-  const baseURL = 'https://himalayas.app/jobs/communication-skills';
-  const listURL = `${baseURL}/jobs`;
+  const baseURL = 'https://himalayas.app';
+  const listURL = `${baseURL}/jobs/communication-skills`;
 
   const { data: html } = await axios.get(listURL, {
     headers: { 'User-Agent': 'Mozilla/5.0' }
