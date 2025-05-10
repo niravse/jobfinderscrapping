@@ -46,7 +46,7 @@ async function scrapeHimalayas(listURL) {
   });
 
   const $ = cheerio.load(html);
-  const jobCards = $('a[href*="/jobs/"]').slice(0, 10); // Limit to first 20 jobs
+  const jobCards = $('.jobs-grid a[href^="/jobs/"]').slice(0, 10); // Limit to first 20 jobs
 
   const jobs = [];
 
