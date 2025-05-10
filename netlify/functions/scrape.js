@@ -91,7 +91,11 @@ async function scrapeHimalayas(listURL) {
 exports.handler = async (event) => {
   try {
     const baseURL = 'https://himalayas.app';
-    const listURL = decodeURIComponent(`${baseURL}${event.queryStringParameters.url}`|| `${baseURL}/jobs/communication-skills`);
+    const listURL = decodeURIComponent(
+      event.queryStringParameters?.url
+        ? `${baseURL}${event.queryStringParameters.url}`
+        : `${baseURL}/jobs/communication-skills`
+    );    
     const data = await scrapeHimalayas(listURL);
 
     return {
